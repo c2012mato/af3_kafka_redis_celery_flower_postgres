@@ -1,7 +1,9 @@
-# Airflow dependencies
-apache-airflow[celery,postgres,redis]==2.8.1
-apache-airflow-providers-postgres>=5.0.0
-apache-airflow-providers-redis>=3.0.0
+# Airflow 3.0.0 dependencies
+apache-airflow[celery,postgres,redis]==3.0.0
+apache-airflow-providers-postgres>=5.10.0
+apache-airflow-providers-redis>=3.6.0
+# Airflow SDK for modern DAG development
+airflow-sdk>=1.0.0
 
 # Kafka dependencies
 kafka-python>=2.0.2

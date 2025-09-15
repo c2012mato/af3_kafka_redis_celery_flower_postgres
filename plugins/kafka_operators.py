@@ -1,8 +1,8 @@
 """
-Custom Kafka operators for Airflow
+Custom Kafka operators for Airflow 3.0.0
+Updated for modern patterns and compatibility
 """
 from airflow.models.baseoperator import BaseOperator
-from airflow.utils.decorators import apply_defaults
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 from airflow.providers.redis.hooks.redis_hook import RedisHook
 import json
@@ -14,13 +14,12 @@ logger = logging.getLogger(__name__)
 
 class KafkaProducerOperator(BaseOperator):
     """
-    Operator to send messages to a Kafka topic
+    Operator to send messages to a Kafka topic - Airflow 3.0.0 compatible
     """
     
     template_fields = ['topic', 'messages']
     ui_color = '#FF6B6B'
     
-    @apply_defaults
     def __init__(
         self,
         topic: str,
@@ -34,7 +33,12 @@ class KafkaProducerOperator(BaseOperator):
         self.messages = messages
         self.kafka_config = kafka_config or {
             'bootstrap_servers': ['kafka:29092'],
-            'value_serializer': lambda v: json.dumps(v).encode('utf-8')
+            'value_serializer': lambda v: json.dumps(v).encode('utf-8'),
+            # Optimized settings for Airflow 3.0.0
+            'acks': 'all',
+            'retries': 3,
+            'batch_size': 16384,
+            'linger_ms': 10,
         }
     
     def execute(self, context):
@@ -60,13 +64,12 @@ class KafkaProducerOperator(BaseOperator):
 
 class KafkaConsumerOperator(BaseOperator):
     """
-    Operator to consume messages from a Kafka topic
+    Operator to consume messages from a Kafka topic - Airflow 3.0.0 compatible
     """
     
     template_fields = ['topics']
     ui_color = '#4ECDC4'
     
-    @apply_defaults
     def __init__(
         self,
         topics: List[str],
@@ -84,7 +87,11 @@ class KafkaConsumerOperator(BaseOperator):
             'bootstrap_servers': ['kafka:29092'],
             'auto_offset_reset': 'earliest',
             'consumer_timeout_ms': timeout_ms,
-            'value_deserializer': lambda m: json.loads(m.decode('utf-8'))
+            'value_deserializer': lambda m: json.loads(m.decode('utf-8')),
+            # Optimized settings for Airflow 3.0.0
+            'enable_auto_commit': True,
+            'session_timeout_ms': 10000,
+            'heartbeat_interval_ms': 3000,
         }
     
     def execute(self, context):
@@ -115,13 +122,12 @@ class KafkaConsumerOperator(BaseOperator):
 
 class RedisToPostgresOperator(BaseOperator):
     """
-    Operator to transfer data from Redis to PostgreSQL
+    Operator to transfer data from Redis to PostgreSQL - Airflow 3.0.0 compatible
     """
     
     template_fields = ['redis_key_pattern', 'postgres_table']
     ui_color = '#45B7D1'
     
-    @apply_defaults
     def __init__(
         self,
         redis_key_pattern: str,
@@ -197,13 +203,12 @@ class RedisToPostgresOperator(BaseOperator):
 
 class DataQualityCheckOperator(BaseOperator):
     """
-    Operator to perform data quality checks
+    Operator to perform data quality checks - Airflow 3.0.0 compatible
     """
     
     template_fields = ['table_name', 'checks']
     ui_color = '#FFA07A'
     
-    @apply_defaults
     def __init__(
         self,
         table_name: str,

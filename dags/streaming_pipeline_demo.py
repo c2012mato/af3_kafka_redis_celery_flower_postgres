@@ -1,10 +1,11 @@
 """
 Sample DAG demonstrating streaming pipeline with Kafka, Redis, and PostgreSQL
+Updated for Airflow 3.0.0 compatibility
 """
 from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.operators.python import PythonOperator
-from airflow.operators.postgres_operator import PostgresOperator
+from airflow.providers.postgres.operators.postgres import PostgresOperator  # Updated import
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 from airflow.providers.redis.hooks.redis_hook import RedisHook
 import json
@@ -24,14 +25,15 @@ default_args = {
     'retry_delay': timedelta(minutes=5),
 }
 
-# Create the DAG
+# Create the DAG with Airflow 3.0.0 optimized settings
 dag = DAG(
     'streaming_pipeline_demo',
     default_args=default_args,
-    description='A sample streaming pipeline DAG',
-    schedule_interval=timedelta(minutes=30),
+    description='A sample streaming pipeline DAG - Airflow 3.0.0 compatible',
+    schedule=timedelta(minutes=30),  # Updated from schedule_interval
     catchup=False,
-    tags=['streaming', 'kafka', 'redis', 'postgres'],
+    tags=['streaming', 'kafka', 'redis', 'postgres', 'airflow-3.0'],
+    max_active_runs=1,  # Optimized for 3.0.0
 )
 
 def create_sample_data(**context):

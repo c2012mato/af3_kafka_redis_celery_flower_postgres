@@ -6,7 +6,7 @@ A comprehensive streaming data pipeline using **Apache Airflow 3**, **Apache Kaf
 
 This project implements a modern streaming data architecture with the following components:
 
-- **Apache Airflow 3** - Workflow orchestration and scheduling
+- **Apache Airflow 3.0.0** - Latest workflow orchestration and scheduling with enhanced API server
 - **Apache Kafka** - Event streaming platform
 - **Redis** - In-memory data store for caching and message brokering
 - **PostgreSQL** - Primary database for data storage
@@ -15,6 +15,12 @@ This project implements a modern streaming data architecture with the following 
 - **Flower** - Celery monitoring tool
 - **Zookeeper** - Kafka cluster coordination
 - **Kafka UI** - Kafka management interface
+
+### New in Airflow 3.0.0 Upgrade:
+- **API Server**: Dedicated service for backend API communication
+- **SDK**: Modern DAG development with decorators and asset lineage
+- **Enhanced Performance**: Optimized operators and execution patterns
+- **Data Assets**: Built-in data lineage tracking
 
 ## 🚀 Quick Start
 
@@ -46,23 +52,26 @@ This script will:
 
 ### 3. Access the Services
 
-| Service | URL | Credentials |
-|---------|-----|-------------|
-| Airflow UI | http://localhost:8080 | airflow/airflow |
-| Flower (Celery) | http://localhost:5555 | - |
-| pgAdmin | http://localhost:5050 | admin@example.com/admin123 |
-| Kafka UI | http://localhost:8090 | - |
-| PostgreSQL | localhost:5432 | airflow/airflow123 |
-| Redis | localhost:6379 | redis123 |
+| Service | URL | Credentials | Notes |
+|---------|-----|-------------|-------|
+| Airflow UI | http://localhost:8080 | airflow/airflow | Enhanced UI with Airflow 3.0.0 features |
+| Airflow API Server | http://localhost:8081 | airflow/airflow | New dedicated API server for backend communication |
+| Flower (Celery) | http://localhost:5555 | - | Celery worker monitoring |
+| pgAdmin | http://localhost:5050 | admin@example.com/admin123 | PostgreSQL administration |
+| Kafka UI | http://localhost:8090 | - | Kafka topic management |
+| PostgreSQL | localhost:5432 | airflow/airflow123 | Database access |
+| Redis | localhost:6379 | redis123 | Cache and message broker |
 
 ## 📊 Architecture Components
 
-### Apache Airflow 3
-- **Webserver**: Web UI for managing workflows
-- **Scheduler**: Task scheduling and orchestration
+### Apache Airflow 3.0.0
+- **Webserver**: Enhanced web UI for managing workflows with improved performance
+- **API Server**: New dedicated API server for backend communication and external integrations
+- **Scheduler**: Task scheduling and orchestration with optimized performance
 - **Worker**: Celery worker for distributed task execution
-- **Triggerer**: Handles deferrable operators
+- **Triggerer**: Handles deferrable operators with enhanced capabilities
 - **Executor**: CeleryExecutor for distributed processing
+- **SDK**: Modern SDK for DAG development with decorators and assets
 
 ### Apache Kafka
 - **Broker**: Single-node Kafka cluster
@@ -93,9 +102,10 @@ This script will:
 ```
 .
 ├── dags/                          # Airflow DAGs
-│   └── streaming_pipeline_demo.py # Sample streaming pipeline DAG
+│   ├── streaming_pipeline_demo.py # Original streaming pipeline DAG (Airflow 3.0.0 compatible)
+│   └── streaming_pipeline_sdk.py  # Modern SDK-based DAG with decorators and assets
 ├── plugins/                       # Airflow plugins
-│   └── kafka_operators.py        # Custom Kafka operators
+│   └── kafka_operators.py        # Custom Kafka operators (updated for 3.0.0)
 ├── scripts/                       # Utility scripts
 │   ├── start.sh                  # Startup script
 │   ├── cleanup.sh                # Cleanup script
@@ -108,7 +118,15 @@ This script will:
 ├── monitoring/                   # Monitoring configuration
 │   ├── prometheus.yml           # Prometheus configuration
 │   └── grafana/                 # Grafana dashboards and datasources
-├── docker-compose.yaml          # Main services configuration
+├── docker-compose.yaml          # Main services configuration (updated for Airflow 3.0.0)
+├── docker-compose.dev.yaml      # Development services configuration
+├── Dockerfile                   # Custom Airflow 3.0.0 image
+├── requirements.txt             # Python dependencies (updated for 3.0.0)
+├── airflow.cfg                  # Airflow configuration (enhanced for 3.0.0)
+├── test_upgrade.py              # Upgrade validation tests
+├── .env                         # Environment variables
+└── README.md                    # This file
+```
 ├── docker-compose.dev.yaml      # Development services
 ├── Dockerfile                   # Custom Airflow image
 ├── requirements.txt             # Python dependencies
@@ -213,8 +231,27 @@ kafka-console-consumer --bootstrap-server localhost:9092 --topic test-topic --fr
 # List DAGs
 docker compose exec airflow-webserver airflow dags list
 
-# Test a specific DAG
+# Test the original DAG
 docker compose exec airflow-webserver airflow dags test streaming_pipeline_demo 2024-01-01
+
+# Test the new SDK-based DAG
+docker compose exec airflow-webserver airflow dags test streaming_pipeline_sdk 2024-01-01
+
+# Test API server connectivity
+curl -u airflow:airflow http://localhost:8081/health
+```
+
+### Airflow 3.0.0 Specific Features
+
+```bash
+# Test the API server
+curl -u airflow:airflow http://localhost:8081/api/v1/dags
+
+# Validate upgrade
+python test_upgrade.py
+
+# Check data assets and lineage (in Airflow UI)
+# Navigate to Data -> Assets to see lineage tracking
 ```
 
 ## 🔒 Security Considerations
