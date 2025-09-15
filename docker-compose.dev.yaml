@@ -1,0 +1,95 @@
+version: '3.8'
+
+# Development override for docker-compose.yaml
+# Use with: docker-compose -f docker-compose.yaml -f docker-compose.dev.yaml up
+
+services:
+  # Add development-specific configurations
+  
+  # Enable debug mode for Airflow webserver
+  airflow-webserver:
+    environment:
+      - AIRFLOW__WEBSERVER__RELOAD_ON_PLUGIN_CHANGE=true
+      - AIRFLOW__CORE__LOAD_EXAMPLES=true
+    command: bash -c "airflow db init && airflow webserver --debug"
+    volumes:
+      - ./dags:/opt/airflow/dags:rw
+      - ./plugins:/opt/airflow/plugins:rw
+      - ./logs:/opt/airflow/logs:rw
+  
+  # Enable debug mode for scheduler
+  airflow-scheduler:
+    environment:
+      - AIRFLOW__SCHEDULER__DAG_DIR_LIST_INTERVAL=10
+      - AIRFLOW__CORE__LOAD_EXAMPLES=true
+    volumes:
+      - ./dags:/opt/airflow/dags:rw
+      - ./plugins:/opt/airflow/plugins:rw
+      - ./logs:/opt/airflow/logs:rw
+  
+  # Add Jupyter notebook for development and analysis
+  jupyter:
+    image: jupyter/datascience-notebook:latest
+    ports:
+      - "8888:8888"
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+      - JUPYTER_TOKEN=jupyter123
+    volumes:
+      - ./notebooks:/home/jovyan/work
+      - ./data:/home/jovyan/data
+    depends_on:
+      - postgres
+      - redis
+      - kafka
+  
+  # Add Redis Commander for Redis management
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    environment:
+      - REDIS_HOSTS=local:redis:6379:0:redis123
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
+  
+  # Add Adminer for additional database management
+  adminer:
+    image: adminer:latest
+    ports:
+      - "8082:8080"
+    environment:
+      - ADMINER_DEFAULT_SERVER=postgres
+    depends_on:
+      - postgres
+  
+  # Add Prometheus for monitoring
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+  
+  # Add Grafana for monitoring dashboards
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+    depends_on:
+      - prometheus
+
+volumes:
+  grafana_data:
