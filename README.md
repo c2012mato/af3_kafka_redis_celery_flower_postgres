@@ -123,7 +123,7 @@ For development with additional tools:
 
 ```bash
 # Start with development services
-docker-compose -f docker-compose.yaml -f docker-compose.dev.yaml up -d
+docker compose -f docker-compose.yaml -f docker-compose.dev.yaml up -d
 ```
 
 Additional development services:
@@ -195,7 +195,7 @@ Default topics created automatically:
 
 ```bash
 # Access Kafka container
-docker-compose exec kafka bash
+docker compose exec kafka bash
 
 # Create a test topic
 kafka-topics --bootstrap-server localhost:9092 --create --topic test-topic --partitions 1 --replication-factor 1
@@ -211,10 +211,10 @@ kafka-console-consumer --bootstrap-server localhost:9092 --topic test-topic --fr
 
 ```bash
 # List DAGs
-docker-compose exec airflow-webserver airflow dags list
+docker compose exec airflow-webserver airflow dags list
 
 # Test a specific DAG
-docker-compose exec airflow-webserver airflow dags test streaming_pipeline_demo 2024-01-01
+docker compose exec airflow-webserver airflow dags test streaming_pipeline_demo 2024-01-01
 ```
 
 ## 🔒 Security Considerations
@@ -238,23 +238,23 @@ docker-compose exec airflow-webserver airflow dags test streaming_pipeline_demo 
 
 ```bash
 # View all logs
-docker-compose logs -f
+docker compose logs -f
 
 # View specific service logs
-docker-compose logs -f airflow-scheduler
-docker-compose logs -f kafka
-docker-compose logs -f postgres
+docker compose logs -f airflow-scheduler
+docker compose logs -f kafka
+docker compose logs -f postgres
 ```
 
 ### Health Checks
 
 ```bash
 # Check service status
-docker-compose ps
+docker compose ps
 
 # Check individual service health
-docker-compose exec postgres pg_isready -U airflow
-docker-compose exec redis redis-cli -a redis123 ping
+docker compose exec postgres pg_isready -U airflow
+docker compose exec redis redis-cli -a redis123 ping
 ```
 
 ## 🧹 Cleanup
@@ -269,7 +269,7 @@ docker-compose exec redis redis-cli -a redis123 ping
 
 ```bash
 # Remove all containers, networks, and volumes
-docker-compose down -v
+docker compose down -v
 
 # Remove all images
 docker system prune -a

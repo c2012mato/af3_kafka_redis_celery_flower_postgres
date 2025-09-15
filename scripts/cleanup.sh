@@ -8,11 +8,11 @@ echo "🧹 Cleaning up Streaming Pipeline..."
 
 # Stop all services
 echo "🛑 Stopping all services..."
-docker-compose down
+docker compose down
 
 # Remove volumes (optional - uncomment if you want to remove all data)
 # echo "🗑️ Removing volumes..."
-# docker-compose down -v
+# docker compose down -v
 
 # Remove dangling images
 echo "🔧 Removing dangling Docker images..."
@@ -26,7 +26,7 @@ rm -rf data/temp/*
 echo "✅ Cleanup completed!"
 echo ""
 echo "💡 To remove all data including volumes, run:"
-echo "   docker-compose down -v"
+echo "   docker compose down -v"
 echo ""
 echo "💡 To remove all Docker images, run:"
 echo "   docker system prune -a"

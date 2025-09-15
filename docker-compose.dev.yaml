@@ -1,5 +1,3 @@
-version: '3.8'
-
 # Development override for docker-compose.yaml
 # Use with: docker-compose -f docker-compose.yaml -f docker-compose.dev.yaml up
 
